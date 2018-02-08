@@ -4,6 +4,7 @@ const resolve = require('path').resolve;
 const src = resolve(__dirname, 'src');
 const build = resolve(__dirname, 'build');
 const OpenBrowserPlugin = require('open-browser-webpack-plugin');
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
 	entry: {
@@ -49,6 +50,7 @@ module.exports = {
 		]
 	},
 
+
 	devServer: {
 		historyApiFallback: true,
 		host: '0.0.0.0',
@@ -64,5 +66,10 @@ module.exports = {
 
 	plugins: [
 		new OpenBrowserPlugin({ url: 'http://localhost:3000/' }),
+
+		new HtmlWebpackPlugin({
+      inject: true,
+      template: "index.html"
+    })
 	]
 };
