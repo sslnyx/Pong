@@ -4,6 +4,8 @@ import {
 } from '../settings';
 import Board from './Board';
 import Paddle from './Paddle';
+import Ball from './Ball';
+import Score from './Score';
 
 export default class Game {
 
@@ -15,9 +17,11 @@ export default class Game {
 		this.board = new Board(this.width, this.height);
 		// Other code goes here...
 
+
 		this.paddleWidth = 8;
 		this.paddleHeight = 56;
 		this.boardGap = 10;
+		this.radius = 28;
 
 		this.player1 = new Paddle(
 			this.height,
@@ -27,6 +31,8 @@ export default class Game {
 			((this.height - this.paddleHeight) / 2),
 			KEYS.a,
 			KEYS.z
+
+			
 		);
 
 		console.log(this.player1);
@@ -43,9 +49,28 @@ export default class Game {
 
 		console.log(this.player2);
 
-	}
+		this.ball = new Ball(5, this.width, this.height);
+		this.ball2 = new Ball(20, this.width, this.height);
+
+
+		document.addEventListener('keydown', event => {
+      switch (event.key) {
+        case KEYS.spaceBar:
+          this.pause = !this.pause;
+          break;
+      }
+		});
+		
+		this.score1 = new Score(this.width / 2 - 50, 30, 30 );
+		this.score2 = new Score(this.width / 2 + 25, 30, 30);
+
+	} // end of the constructor
 
 	render() {
+
+		if(this.pause){
+      return;
+    }
 		// More code goes here...
 		this.gameElement.innerHTML = '';
 
@@ -56,10 +81,19 @@ export default class Game {
 
 		this.board.render(svg);
 		
+
 		this.player1.render(svg);
 		this.player2.render(svg);
 
+		this.ball.render(svg, this.player1, this.player2);
+		this.ball2.render(svg, this.player1, this.player2);
+
+		this.score1.render(svg, this.player1.score);
+		this.score2.render(svg, this.player2.score);
+
 		this.gameElement.appendChild(svg);
+
+		
 
 	
 	}
