@@ -96,9 +96,6 @@ export default class Game {
 
 		this.gameElement.appendChild(svg);
 
-		
-
-	
 	}
 
 }

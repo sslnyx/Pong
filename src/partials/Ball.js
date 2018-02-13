@@ -11,7 +11,8 @@ export default class Ball {
     this.boardHeight = boardHeight;
     this.direction = 1;
 
-    this.ping = new Audio('public/sounds/pong-04.wav');
+    this.ping = new Audio('public/sounds/pong-01.wav');
+    this.ping2 = new Audio('public/sounds/pong-03.wav');
 
     this.reset();
 
@@ -29,12 +30,13 @@ export default class Ball {
     //a number between -5 and 5, based on this.vy
     //this guarantees that if v is large, vx is small (and vice versa)
     this.vx = this.direction * (6 - Math.abs(this.vy));
+    this.color = 'white';
   }
 
   goal(player){
     player.score++;
     this.reset();
-    console.log(player.score);
+    // console.log(player.score);
   }
 
 
@@ -54,7 +56,7 @@ export default class Ball {
   }
 
   paddleCollision(player1, player2) {
-    if (this.vx > 0) {
+    if (this.vx > 0 && player2.x !== 454) {
       let paddle = player2.coordinates(player2.x, player2.y, player2.width, player2.height);
       let [leftX, rightX, topY, bottomY] = paddle;
 
@@ -64,10 +66,11 @@ export default class Ball {
         (this.y >= topY && this.y <=bottomY)
       ) {
         this.vx = -this.vx;
+        this.color = 'white';
         this.ping.play();
         // add sound
       }
-    } else {
+    } else if (this.vx < 0 && player1.x !== 50){
         let paddle = player1.coordinates(player1.x, player1.y, player1.width, player1.height);
         let [leftX, rightX, topY, bottomY] = paddle;
         if(
@@ -77,7 +80,44 @@ export default class Ball {
         )
         {
           this.vx = -this.vx;
+          this.color = 'white';
         this.ping.play();
+          
+          // add sound
+        }
+      //...
+    }
+  }
+
+  strikeCollision(player1, player2) {
+    if (this.vx > 0 && player2.x == 454) {
+      let paddle = player2.coordinates(player2.x, player2.y, player2.width, player2.height);
+      let [leftX, rightX, topY, bottomY] = paddle;
+
+      if (
+        (this.x + this.radius >= leftX) &&
+        (this.x + this.radius <= rightX) &&
+        (this.y >= topY && this.y <=bottomY)
+      ) {
+        this.vx = -this.vx;
+        this.vx = this.vx*2;
+        this.color = 'red';
+        this.ping2.play();
+        // add sound
+      }
+    } else if (this.vx < 0 && player1.x == 50){
+        let paddle = player1.coordinates(player1.x, player1.y, player1.width, player1.height);
+        let [leftX, rightX, topY, bottomY] = paddle;
+        if(
+          (this.x - this.radius <= rightX) &&
+          (this.x - this.radius >= leftX) &&
+          (this.y >= topY && this.y <= bottomY)
+        )
+        {
+          this.vx = -this.vx;
+          this.vx = this.vx*2;
+          this.color = 'red';
+        this.ping2.play();
           
           // add sound
         }
@@ -96,10 +136,12 @@ export default class Ball {
 
     this.paddleCollision(player1, player2);
 
+    this.strikeCollision(player1, player2);
+
 
     let circle = document.createElementNS(SVG_NS, 'circle');
 
-    circle.setAttributeNS(null, 'fill', 'white');
+    circle.setAttributeNS(null, 'fill', this.color);
     circle.setAttributeNS(null, 'r', this.radius);
     circle.setAttributeNS(null, 'cx', this.x);
     circle.setAttributeNS(null, 'cy', this.y);
